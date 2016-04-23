@@ -1,0 +1,44 @@
+---
+- hosts: local
+  tasks:
+  - name: "Checkout dotfiles"
+    git: repo=ssh://git@github.com/makkus/dotfiles 
+         dest=~/dotfiles
+         accept_hostkey=True
+  - name: "Unlock encrypted dotfiles"
+    shell: git-crypt unlock
+           chdir=~/dotfiles
+
+- hosts: local
+  tasks:
+  - name: "Install spacemacs"
+    git: repo=git://github.com/syl20bnr/spacemacs
+         dest=~/.emacs.d
+  - name: "Install zplug"
+    git: repo=git://github.com/b4b4r07/zplug
+         dest=~/.zplug
+  
+
+- hosts: local
+  vars:
+    base_packages:
+      - bash
+      - beets
+      - flake8
+      - fonts
+      - git
+      - nix
+      - rofi-pass
+      - spacemacs
+      - Xresources
+      - zsh
+    x_packages:
+      - i3
+  tasks:
+  - name: "Remove potential setup configs"
+    shell: rm -rf ~/.bash_profile ~/.bashrc ~/.profile ~/.nix-pkgs
+  - name: "Create config symlinks with stow"
+    shell: stow {{ item }}
+           chdir=~/dotfiles
+    with_items:
+      - "{{ base_packages + x_packages }}"

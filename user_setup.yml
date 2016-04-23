@@ -1,0 +1,30 @@
+---
+- hosts: local
+
+  vars_prompt:
+    - name: "ssh_key_password"
+      prompt: "ssh key password"
+      private: yes
+  
+  tasks:
+    - name: "Generate ssh key"
+      command: ssh-keygen -N "{{ ssh_key_password }}" -f "~/.ssh/id_rsa" creates=~/.ssh/id_rsa
+    - name: "Create gnupg dir"
+      file: path="~/.gnupg"
+    - name: "Setup gpg public keys"
+      copy: src=data-external/gpg/pubring.gpg dest=~/.gnupg/pubring.gpg mode=0600
+    - name: "Setup gpg private keys"
+      copy: src=data-external/gpg/secring.gpg dest=~/.gnupg/secring.gpg mode=0600
+    - name: import ownertrust
+      command: gpg --import-ownertrust data-external/gpg/markus-ownertrust.gpg.txt creates=~/.gnupg/trustdb.gpg
+
+- hosts: local
+
+  vars_prompt:
+    - name: "github_password"
+      prompt: "github password"
+      private: yes
+
+  tasks:
+    - name: "Upload public ssh key to github"
+      shell: curl -u "makkus:{{ github_password }}" --data "{\"title\":\"$(hostname)\", \"key\":\"$(cat ~/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys

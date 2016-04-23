@@ -1,0 +1,81 @@
+---
+- hosts: local
+  become: yes
+  become_user: root
+  become_method: sudo
+  gather_facts: no
+  tasks:
+  - name: install nix dependencies
+    apt: pkg={{item}} state=installed
+    with_items:
+          - wget
+          - bzip2
+          - ca-certificates
+
+- hosts: local
+  tasks:
+   - name: Install nix
+     command: data/install_nix.sh creates=/home/markus/.nix-profile/bin/nix-env
+
+- hosts: local
+  tasks:
+   - name: Install external nix packages
+     command: data/nix_external_packages.sh 
+
+- hosts: local
+  vars:
+    base_nix_packages:
+      - di
+      - emacs
+      - git
+      - git-crypt
+      - gnupg
+      - htop
+      - imapfilter
+      - isync
+      - mu
+      - nox
+      - pandoc
+      - password-store
+      - silver-searcher
+      - stow
+      - tree
+      - whois
+      - zile
+      - zsh
+    nix_proprietary_packages:
+      - oraclejdk
+      - unrar
+      - idea-ultimate
+    nix_x_packages:
+      - autocutsel
+      - chromium
+      - compton
+      - dunst
+      - firefox
+      - gimp
+      - i3
+      - i3lock
+      - keepass
+      - lxappearance-0.6.1
+      - python2.7-udiskie
+      - rofi
+      - rxvt-unicode
+      - seafile-client
+      - shotwell
+      - unetbootin
+      - vlc
+      - xauth
+      - xclip
+      - xdotool
+      - xsel
+      - zathura
+  tasks:
+  - name: install nix packages
+    environment:
+      PATH: "{{ ansible_env.HOME }}/.nix-profile/bin:{{ ansible_env.PATH }}"
+      SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+    nix: name={{ item }} state=present
+    with_items:
+      - "{{ base_nix_packages + nix_x_packages }}"
+
