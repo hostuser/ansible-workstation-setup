@@ -62,6 +62,7 @@
       - meld
       - python2.7-udiskie
       - rofi
+      - rofi-pass
       - rxvt-unicode
       - seafile-client
       - shotwell
