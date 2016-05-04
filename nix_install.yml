@@ -64,6 +64,7 @@
       - rofi
       - rofi-pass
       - rxvt-unicode
+      - scrot
       - seafile-client
       - shotwell
       - unetbootin
