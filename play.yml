@@ -1,0 +1,13 @@
+---
+- hosts: all
+
+  vars_prompt:
+    - name: "ssh_key_password"
+      prompt: "ssh key password"
+      private: yes
+    - name: "github_password"
+      prompt: "github password"
+      private: yes
+
+  roles:
+    - role: workstation
