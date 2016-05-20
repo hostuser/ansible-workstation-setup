@@ -2,12 +2,12 @@
 
 sudo apt install -y wget unzip
 
-mkdir -p /tmp/setup
-cd /tmp/setup
+mkdir -p ~/src/system
+cd ~/src/system
 wget https://github.com/makkus/ansible-workstation-setup/archive/master.zip
 unzip master.zip
 rm master.zip
-cd /tmp/setup/ansible-workstation-setup-master
+cd ~/src/system/ansible-workstation-setup-master
 ./bootstrap.sh
 
 
